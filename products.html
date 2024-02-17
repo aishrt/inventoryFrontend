@@ -1,0 +1,165 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8" />
+  <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="description"
+    content="Omnifood is a AI powered food subscription that will make you eat healthy again, 365 days per year, It's tailored to your personal tastes and nutritional needs." />
+  <link rel="icon" href="img/logo.png" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Rubik:wght@400;500;600;700&display=swap" rel="stylesheet" />
+  <!-- CUSTOM CSS -->
+  <link rel="stylesheet" href="css/general.css" />
+  <link rel="stylesheet" href="css/style.css" />
+  <link rel="stylesheet" href="css/queries.css" />
+  <title>Products&mdash; Inventory!</title>
+
+  <!-- JS LIBRARIES -->
+  <script type="module" src="https://unpkg.com/ionicons@5.5.2/dist/ionicons/ionicons.esm.js"></script>
+  <script nomodule src="https://unpkg.com/ionicons@5.5.2/dist/ionicons/ionicons.js"></script>
+  <script defer src="https://unpkg.com/smoothscroll-polyfill/dist/smoothscroll.min.js"></script>
+
+  <script type="text/javascript" src="js/bootstrap.min.js"></script>
+  <script src="js/bootstrap.bundle.min.js"></script>
+  <script src="js/jquery.min.js"></script>
+  <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.2.0/js/bootstrap.min.js"></script>
+
+  <!-- CUSTOM JS -->
+  <script defer src="js/script.js"></script>
+</head>
+
+<body>
+  
+  <!-- HEADER -->
+  <header class="header">
+    <a class="logoText" href="index.html">
+      <p>Inventory <img class="logoPic" src="img/logo.png" /> Management</p>
+    </a>
+
+    <nav class="main-nav">
+      <ul class="main-nav-list">
+        <li><a class="main-nav-link" href="products.html">Product List</a></li>
+      </ul>
+    </nav>
+
+    <button class="btn-mobile-nav">
+      <ion-icon class="icon-mobile-nav" name="menu-outline"></ion-icon>
+      <ion-icon class="icon-mobile-nav" name="close-outline"></ion-icon>
+    </button>
+  </header>
+
+  <main>
+    <!-- HERO -->
+
+    <div class="header-sectionqw">
+      <!-- <img src="img/longMango.jpg" alt="Mango Image"> -->
+      <p>All Products</p>
+    </div>
+    <section class="section-meals" id="meals">
+      <div class="container invoiceTable ">
+        <table id="invoiceTable">
+          <thead>
+            <tr>
+              <th>Number</th>
+              <th>Customer</th>
+              <th>Total</th>
+              <th>Products</th>
+            </tr>
+          </thead>
+          <tbody>
+            <!-- Table content will be inserted here -->
+          </tbody>
+        </table>
+      </div>
+    </section>
+
+
+    <!-- FOOTER -->
+    <footer class="footer">
+      <div class="container grid grid-footer">
+        <div class="logo-col">
+          <a class="logoText mb-5" href="#">
+            <p>Inventory <img class="logoPic" src="img/logo.png" /> Management</p>
+          </a>
+
+          <p class="copyright">
+            Copyright &copy; Prompgeek
+          </p>
+          <p class="copyrightC">
+            Developed by: Ambar Sky Tech Private Limited
+          </p>
+        </div>
+
+        <div class="address-col">
+          <p class="footer-heading">Address</p>
+          <address class="contacts">
+            <p class="address">
+              HOUSE NO. 9F, 1st FLOOR, RAJPUR ROAD, NEAR ASHOKA APPARTMENT,
+            </p>
+            <p>
+              <a href="tel:415-201-6370" class="footer-link">8878985689</a>
+              <br />
+              <a href="mailto: prompgeek@gmail.com" class="footer-link">
+                prompgeek@gmail.com
+              </a>
+            </p>
+          </address>
+        </div>
+
+
+        <nav class="nav-col">
+          <p class="footer-heading">Best Store</p>
+          <ul class="footer-nav">
+            <li><a href="#" class="footer-link">Why us</a></li>
+          </ul>
+        </nav>
+
+        <nav class="nav-col">
+          <p class="footer-heading">Resources</p>
+          <ul class="footer-nav">
+            <li><a href="termsCondition.html" class="footer-link">Terms & Conditions</a></li>
+            <li><a href="privacy.html" class="footer-link">Privacy &amp; terms</a></li>
+          </ul>
+        </nav>
+      </div>
+    </footer>
+  </main>
+
+  <script>
+    // Function to fetch data from the API
+    function fetchData() {
+      fetch('http://localhost:4004/invoice/list')
+        .then(response => response.json())
+        .then(data => {
+          // Clear any existing table rows
+          const tableBody = document.querySelector('#invoiceTable tbody');
+          tableBody.innerHTML = '';
+
+          // Loop through the data and populate the table rows
+          data.data.forEach(invoice => {
+            const row = document.createElement('tr');
+            row.innerHTML = `
+              <td>${invoice.invoiceNumber}</td>
+              <td>${invoice.customer}</td>
+              <td>${invoice.total}</td>
+              <td class="helpo">
+                <ul>
+                  ${invoice.products.map(product => `<li>${product.productName} - ${product.qty} - ${product.rate}</li>`).join('')}
+                </ul>
+              </td>
+            `;
+            tableBody.appendChild(row);
+          });
+        })
+        .catch(error => console.error('Error fetching data:', error));
+    }
+
+    // Call the fetchData function when the page loads
+    window.onload = fetchData;
+  </script>
+</body>
+
+</html>

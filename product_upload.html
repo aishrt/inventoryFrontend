@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Product Upload</title>
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+  <div class="container">
+    <h1>Product Upload</h1>
+    <input type="file" id="fileInput" accept=".csv"><br><br>
+    <button onclick="uploadCSV()">Upload CSV</button>
+    <p id="message"></p>
+  </div>
+  
+  <script src="script.js"></script>
+  <script>function uploadCSV() {
+    const fileInput = document.getElementById("fileInput");
+    const file = fileInput.files[0];
+    
+    if (!file) {
+      document.getElementById("message").innerHTML = "Please select a file.";
+      return;
+    }
+    
+    const formData = new FormData();
+    formData.append("filePath", file);
+    
+    const url = "http://localhost:4004/item/upload-csv"; // Replace with your API endpoint
+    
+    fetch(url, {
+      method: "POST",
+      body: formData
+    })
+    .then(response => {
+      if (response.ok) {
+        return response.json();
+      }
+      throw new Error("Network response was not ok.");
+    })
+    .then(data => {
+      document.getElementById("message").innerHTML = "CSV file uploaded successfully!";
+    })
+    .catch(error => {
+      console.error("There was a problem with your fetch operation:", error);
+      document.getElementById("message").innerHTML = "Error uploading CSV file. Please try again later.";
+    });
+  }
+  </script>
+</body>
+</html>
