@@ -249,7 +249,7 @@
     fetch('http://localhost:4004/item/get-items')
       .then(response => response.json())
       .then(data => {
-        const itemsData = data.data.map(item => item['Item name*']);
+        const itemsData = data.data.map(item => item['Item name*' ,'Sale Price']);
 
         document.getElementById('searchInput').addEventListener('input', function () {
           const searchTerm = this.value.toLowerCase();
@@ -257,12 +257,14 @@
           suggestionsElement.innerHTML = ''; // Clear previous suggestions
 
           if (searchTerm.trim() !== '') {
-            itemsData.forEach(itemName => {
+            itemsData.forEach(itemName ,salePrice => {
               if (itemName.toLowerCase().includes(searchTerm)) {
                 const suggestionElement = document.createElement('div');
-                suggestionElement.textContent = itemName;
+                suggestionElement.textContent = itemName , salePrice;
                 suggestionElement.addEventListener('click', function () {
                   document.getElementById('searchInput').value = itemName;
+                  document.getElementById('searchInput').value = salePrice;
+
                   suggestionsElement.innerHTML = ''; // Clear suggestions after selecting
                 });
                 suggestionsElement.appendChild(suggestionElement);
@@ -275,10 +277,43 @@
         console.error('Error fetching data:', error);
       });
   </script>
+  <!-- <script>
+    fetch('http://localhost:4004/item/get-items')
+      .then(response => response.json())
+      .then(data => {
+        const itemsData = data.data;
+  
+        document.getElementById('searchInput').addEventListener('input', function () {
+          const searchTerm = this.value.toLowerCase();
+          const suggestionsElement = document.getElementById('suggestions');
+          suggestionsElement.innerHTML = ''; // Clear previous suggestions
+  
+          if (searchTerm.trim() !== '') {
+            itemsData.forEach(item => {
+              if (item['Item name*'].toLowerCase().includes(searchTerm) || item['Sale Price'].toString().includes(searchTerm)) {
+                const suggestionElement = document.createElement('div');
+                // Include both item name and sale price in the suggestion text
+                suggestionElement.textContent = `${item['Item name*']} - ${item['Sale Price']}`;
+                suggestionElement.addEventListener('click', function () {
+                  document.getElementById('searchInput').value = item['Item name*'];
+                  suggestionsElement.innerHTML = ''; // Clear suggestions after selecting
+                });
+                suggestionsElement.appendChild(suggestionElement);
+              }
+            });
+          }
+        });
+      })
+      .catch(error => {
+        console.error('Error fetching data:', error);
+      });
+  </script> -->
+  
+  
 
 </head>
 
-<body>
+<body>a
   <div class="container ">
 
 
@@ -451,16 +486,18 @@
             throw new Error('Data format is not as expected');
           }
 
-          const itemsData = data.data.map(item => item.itemName);
+          const itemsData = data.data.map(item => item.itemName , item => item.salePrice);
 
           suggestionsElement.innerHTML = ''; // Clear previous suggestions
 
           itemsData.forEach(itemName => {
             if (itemName.toLowerCase().includes(searchTerm)) {
               const suggestionElement = document.createElement('div');
-              suggestionElement.textContent = itemName;
+              suggestionElement.textContent = itemName  ;
+
               suggestionElement.addEventListener('click', function () {
                 searchInput.value = itemName;
+
                 suggestionsElement.innerHTML = ''; // Clear suggestions after selecting
                 BtnAdd()
                 closeModal()
