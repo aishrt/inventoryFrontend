@@ -1,0 +1,469 @@
+<!DOCTYPE html>
+<ht ml lang="en">
+<head>
+<met a charset="UTF-8">
+<met a name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Display Items</title>
+<style>
+/* General styles */
+body {
+font-family: Arial, sans-serif;
+margin: 0;
+padding: 0;
+background-color: #f4f4f4;
+}
+
+.container {
+max-width: 800px;
+margin: 50px auto;
+padding: 20px;
+background-color: #fff;
+border-radius: 5px;
+box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+}
+
+h1 {
+text-align: center;
+margin-bottom: 20px;
+color: #333;
+}
+
+.item {
+padding: 10px;
+border-bottom: 1px solid #ccc;
+position: relative;
+}
+
+.item-name {
+font-size: 18px;
+font-weight: bold;
+margin-bottom: 5px;
+}
+
+.item-details {
+margin-left: 20px;
+font-size: 14px;
+color: #666;
+}
+
+.item-actions {
+position: absolute;
+top: 10px;
+right: 10px;
+}
+
+.button {
+padding: 8px 15px;
+background-color: #007bff;
+color: #fff;
+border: none;
+border-radius: 3px;
+cursor: pointer;
+margin-left: 5px;
+}
+
+.edit-button {
+background-color: #ffc107;
+}
+
+.delete-button {
+background-color: #dc3545;
+}
+
+/* Modal styles */
+.modal {
+display: none;
+position: fixed;
+z-index: 1000;
+left: 0;
+top: 0;
+width: 100%;
+height: 100%;
+overflow: auto;
+background-color: rgba(0, 0, 0, 0.4); /* Transparent black background */
+}
+
+.modal-content {
+background-color: #fefefe;
+margin: 20% auto;
+padding: 20px;
+border: 1px solid #888;
+width: 60%;
+border-radius: 5px;
+box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1); /* Adding shadow effect */
+}
+
+.close {
+color: #aaa;
+float: right;
+font-size: 28px;
+font-weight: bold;
+}
+
+.close:hover,
+.close:focus {
+color: black;
+text-decoration: none;
+cursor: pointer;
+}
+
+.form-group {
+margin-bottom: 20px;
+}
+
+label {
+display: block;
+margin-bottom: 5px;
+color: #555;
+}
+
+input[type="text"],
+input[type="number"] {
+width: calc(100% - 10px);
+padding: 8px;
+border: 1px solid #ccc;
+border-radius: 3px;
+}
+
+button[type="submit"] {
+width: 100%;
+padding: 10px;
+background-color: #007bff;
+color: #fff;
+border: none;
+border-radius: 3px;
+cursor: pointer;
+}
+
+button[type="submit"]:hover {
+background-color: #0056b3;
+}
+
+/* Confirmation Modal */
+.confirm-modal {
+display: none;
+background-color: rgba(0, 0, 0, 0.4);
+position: fixed;
+z-index: 1001;
+left: 0;
+top: 0;
+width: 100%;
+height: 100%;
+overflow: auto;
+}
+
+.confirm-modal-content {
+background-color: #fefefe;
+margin: 20% auto;
+padding: 20px;
+border: 1px solid #888;
+width: 40%;
+border-radius: 5px;
+box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+}
+
+.confirm-modal-content h2 {
+text-align: center;
+margin-bottom: 20px;
+}
+
+.confirm-buttons {
+display: flex;
+justify-content: center;
+}
+
+.confirm-buttons button {
+padding: 10px 20px;
+margin: 0 10px;
+border: none;
+border-radius: 3px;
+cursor: pointer;
+}
+
+.confirm-buttons button#confirmDelete {
+background-color: #dc3545;
+color: #fff;
+}
+
+.confirm-buttons button#confirmDelete:hover {
+background-color: #c82333;
+}
+
+.confirm-buttons button#cancelDelete {
+background-color: #6c757d;
+color: #fff;
+}
+
+.confirm-buttons button#cancelDelete:hover {
+background-color: #5a6268;
+}
+</style>
+</head>
+<body>
+<div class="container">
+<h1>Item List</h1>
+<button id="addProductBtn" class="button">Add Product</button> <!-- Add Product Button -->
+<div id="itemList"></div>
+</div>
+
+<!--Edit Modal -->
+<div id="editModal" class="modal">
+<div class="modal-content">
+    <span class="close">&times;</span>
+  <h2>Edit Product</h2>
+  <fo rm id="editForm">
+    <div class="form-group">
+      <label for="editItemName">Item Name:</label>
+      <input type="text" id="editItemName" name="itemName" required>
+    </div>
+    <div class="form-group">
+      <label for="editItemCode">Item Code:</label>
+      <input type="text" id="editItemCode" name="itemCode" required disabled>
+    </div>
+    <div class="form-group">
+      <label for="editStock">Stock:</label>
+      <input type="number" id="editStock" name="stock" required>
+    </div>
+    <div class="form-group">
+      <label for="editPurchasePrice">Purchase Price:</label>
+      <input type="number" id="editPurchasePrice" name="purchasePrice" required>
+    </div>
+    <div class="form-group">
+      <label for="editSalePrice">Sale Price:</label>
+      <input type="number" id="editSalePrice" name="salePrice" required>
+    </div>
+    <div class="form-group">
+      <label for="editSalePrice">Expiry Dates:</label>
+      <input type="date" id="editSalePrice" name="Expiry Date" required>
+    </div>
+    <button type="submit">Update Product</button>
+  </form>
+</div>
+</div>
+
+<!-- Confirmation Modal -->
+<div id="confirmModal" class="confirm-modal">
+<div class="confirm-modal-content">
+  <h2>Are you sure you want to delete this product?</h2>
+  <div class="confirm-buttons">
+    <button id="confirmDelete">Delete</button>
+    <button id="cancelDelete">Cancel</button>
+  </div>
+</div>
+</div>
+
+<!-- Add Product Modal -->
+<div id="addModal" class="modal">
+<div class="modal-content">
+  <span class="close">&times;</span>
+  <h2>Add Product</h2>
+  <fo rm id="addForm">
+    <div class="form-group">
+      <label for="addItemName">Item Name:</label>
+      <input type="text" id="addItemName" name="itemName" required>
+    </div>
+    <div class="form-group">
+      <label for="addItemCode">Item Code:</label>
+      <input type="text" id="addItemCode" name="itemCode" required>
+    </div>
+    <div class="form-group">
+      <label for="addStock">Stock:</label>
+      <input type="number" id="addStock" name="stock" required>
+    </div>
+    <div class="form-group">
+      <label for="addPurchasePrice">Purchase Price:</label>
+      <input type="number" id="addPurchasePrice" name="purchasePrice" required>
+    </div>
+    <div class="form-group">
+      <label for="addSalePrice">Sale Price:</label>
+      <input type="number" id="addSalePrice" name="salePrice" required>
+    </div>
+    <button type="submit">Add Product</button>
+  </form>
+</div>
+</div>
+
+<script>
+// Display items
+fetch('http://localhost:4004/item/get-items')
+.then(response => response.json())
+.then(data => {
+ console.log(data?.data,"dataaaaaaaaaaaaaaaaaaaaaaaaa")
+  const itemListElement = document.getElementById('itemList');
+  let count = 1;
+  data?.data?.forEach(item => {
+  const itemName = item['itemName'];
+ const itemCode = item['itemCode'];
+ const stock = item['inStock'];
+ const purchasePrice = item['purchasePrice'];
+ const salePrice = item['salePrice'];
+   
+    const itemElement = document.createElement('div');
+    itemElement.classList.add('item');
+
+    const nameElement = document.createElement('div');
+    nameElement.classList.add('item-name');
+    nameElement.textContent = count + '. ' + itemName;
+    itemElement.appendChild(nameElement);
+
+    const detailsElement = document.createElement('div');
+    detailsElement.classList.add('item-details');
+    detailsElement.innerHTML = `
+      <p><strong>Item Code:</strong> ${itemCode}</p>
+      <p><strong>Stock:</strong> ${stock}</p>
+      <p><strong>Purchase Price:</strong> ${purchasePrice}</p>
+      <p><strong>Sale Price:</strong> ${salePrice}</p>
+    `;
+    itemElement.appendChild(detailsElement);
+
+    const actionsElement = document.createElement('div');
+    actionsElement.classList.add('item-actions');
+   
+    // Add edit button
+    const editButton = document.createElement('button');
+    editButton.classList.add('button', 'edit-button');
+    editButton.textContent = 'Edit';
+    editButton.onclick = function() {
+      openEditModal(item);
+    };
+    actionsElement.appendChild(editButton);
+   
+    // Add delete button
+    const deleteButton = document.createElement('button');
+    deleteButton.classList.add('button', 'delete-button');
+    deleteButton.textContent = 'Delete';
+    deleteButton.onclick = function() {
+      // Open confirmation modal when delete button is clicked
+      document.getElementById('confirmModal').style.display = 'block';
+    };
+    actionsElement.appendChild(deleteButton);
+   
+    itemElement.appendChild(actionsElement);
+    itemListElement.appendChild(itemElement);
+    count++;
+  });
+})
+.catch(error => {
+  console.error('Error fetching data:', error);
+});
+
+// Modal functionality
+const modal = document.getElementById('editModal');
+const closeBtn = document.querySelector('.close');
+
+function openEditModal(item) {
+modal.style.display = 'block';
+// Populate form with item details
+document.getElementById('editItemName').value = item['itemName'];
+document.getElementById('editItemCode').value = item['itemCode'];
+document.getElementById('editStock').value = item['inStock'];
+document.getElementById('editPurchasePrice').value = item['purchasePrice'];
+document.getElementById('editSalePrice').value = item['salePrice'];
+}
+
+closeBtn.onclick = function() {
+modal.style.display = 'none';
+};
+
+window.onclick = function(event) {
+if (event.target === modal) {
+  modal.style.display = 'none';
+}
+};
+
+// Confirmation Modal functionality
+const confirmModal = document.getElementById('confirmModal');
+const confirmDeleteBtn = document.getElementById('confirmDelete');
+const cancelDeleteBtn = document.getElementById('cancelDelete');
+
+confirmDeleteBtn.onclick = function() {
+// Implement delete functionality here
+fetch(`http://localhost:4004/item/delete/${productId}`, {
+  method: 'DELETE'
+})
+.then(response => response.json())
+.then(data => {
+  console.log(data);
+  // Refresh the page or update the item list after deletion
+})
+.catch(error => console.error('Error deleting item:', error));
+confirmModal.style.display = 'none';
+};
+
+cancelDeleteBtn.onclick = function() {
+confirmModal.style.display = 'none';
+};
+
+// Update product form submission
+document.getElementById('editForm').addEventListener('submit', function(event) {
+event.preventDefault();
+const formData = new FormData(this);
+const updatedProduct = {};
+formData.forEach((value, key) => {
+  updatedProduct[key] = value;
+});
+
+
+// Perform update logic here (e.g., send updatedProduct to server)
+fetch('http://localhost:4004/item/update/65cb33505435133fcb1014f5', {
+  method: 'PUT',
+  headers: {
+    'Content-Type': 'application/json'
+  },
+  body: JSON.stringify(updatedProduct)
+})
+.then(response => response.json())
+.then(data => {
+  console.log(data);
+  // Refresh the page or update the item list after updating
+})
+.catch(error => console.error('Error updating product:', error));
+modal.style.display = 'none';
+});
+
+// Add Product form submission
+document.getElementById('addForm').addEventListener('submit', function(event) {
+event.preventDefault();
+const formData = new FormData(this);
+const newProduct = {};
+formData.forEach((value, key) => {
+  newProduct[key] = value;
+});
+// Perform add product logic here (e.g., send newProduct to server)
+fetch('http://localhost:4004/item/add', {
+  method: 'POST',
+  headers: {
+    'Content-Type': 'application/json'
+  },
+  body: JSON.stringify(newProduct)
+})
+.then(response => response.json())
+.then(data => {
+  console.log(data);
+  // Refresh the page or update the item list after adding
+})
+.catch(error => console.error('Error adding product:', error));
+modal.style.display = 'none';
+});
+
+// Show Add Product Modal
+const addModal = document.getElementById('addModal');
+const addBtn = document.getElementById('addProductBtn');
+const addCloseBtn = addModal.querySelector('.close');
+
+addBtn.onclick = function() {
+addModal.style.display = 'block';
+};
+
+addCloseBtn.onclick = function() {
+addModal.style.display = 'none';
+};
+
+window.onclick = function(event) {
+if (event.target === addModal) {
+  addModal.style.display = 'none';
+}
+};
+</script>
+</body>
+</html>
